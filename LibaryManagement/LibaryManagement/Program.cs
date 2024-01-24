@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 namespace LibaryManagement
@@ -61,7 +59,7 @@ namespace LibaryManagement
             var book = books.FirstOrDefault(b => b.ISBN == isbn && b.Copies > b.Borrowed);
             if (book != null && book.Copies > 0 && book.Borrowed < book.Copies)
             {
-                book.Copies--;
+                book.Borrowed++;
                 Console.WriteLine($"Successfully borrowed '{book.Title}' by {book.Author}.");
             }
             else
@@ -74,7 +72,7 @@ namespace LibaryManagement
             var book = books.FirstOrDefault(b => b.ISBN == isbn && b.Borrowed > 0);
             if (book != null)
             {
-                book.Borrowed++;
+                book.Borrowed--;
                 Console.WriteLine($"Successfully returned '{book.Title}' by {book.Author}.");
             }
             else
@@ -142,11 +140,11 @@ namespace LibaryManagement
             while (true)
             {
                 Console.WriteLine("\nLibrary Control System");
-                Console.WriteLine("1. Book Add");
-                Console.WriteLine("2. All Books List");
-                Console.WriteLine("3. Book Search");
+                Console.WriteLine("1. Add a new book");
+                Console.WriteLine("2. Şist All Books");
+                Console.WriteLine("3. Search Book");
                 Console.WriteLine("4. Borrow a Book");
-                Console.WriteLine("5. Return Book ");
+                Console.WriteLine("5. Return Book");
                 Console.WriteLine("6. List Expired Books");
                 Console.WriteLine("7. Exit");
 
@@ -158,11 +156,11 @@ namespace LibaryManagement
                     case "1":
                         Console.Write("Title: ");
                         string title = Console.ReadLine();
-                        Console.Write("Author");
+                        Console.Write("Author: ");
                         string author = Console.ReadLine();
                         Console.Write("ISBN: ");
                         string isbn = Console.ReadLine();
-                        Console.Write("Copy: ");
+                        Console.Write("Number of copies: ");
                         int copies = int.Parse(Console.ReadLine());
 
                         Book newBook = new Book
