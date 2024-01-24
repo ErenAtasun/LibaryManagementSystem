@@ -3,189 +3,219 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using System.IO;
 
 namespace LibaryManagement
 {
-    public class Kitap
+    public class Book
     {
-        public string Baslik { get; set; }
-        public string Yazar { get; set; }
+        public string Title { get; set; }
+        public string Author { get; set; }
         public string ISBN { get; set; }
-        public int KopyaSayisi { get; set; }
-        public int OduncAlinanKopyalar { get; set; }
+        public int Copies { get; set; }
+        public int Borrowed { get; set; }
 
-        // Yapıcı Metot
-        public Kitap(string baslik, string yazar, string isbn, int kopyaSayisi)
-        {
-            Baslik = baslik;
-            Yazar = yazar;
-            ISBN = isbn;
-            KopyaSayisi = kopyaSayisi;
-            OduncAlinanKopyalar = 0;
-        }
+        
+
     }
-
-    // Kütüphane Sınıfı
-    public class Kutuphane
+    public class Library
     {
-        private List<Kitap> kitaplar;
+        private List<Book> books;
 
-        // Yapıcı Metot
-        public Kutuphane()
+        public Library()
         {
-            kitaplar = new List<Kitap>();
+            books = new List<Book>();
         }
-
-        // Kitap Ekleme Metodu
-        public void KitapEkle(Kitap kitap)
+        public void BookAdd(Book book)
         {
-            kitaplar.Add(kitap);
-            Console.WriteLine("Kitap başarıyla eklendi.");
+            books.Add(book);
+            
         }
-
-        // Tüm Kitapları Listeleme Metodu
-        public void TumKitaplariListele()
+        public void AllBooksList()
         {
-            Console.WriteLine("Kütüphanedeki Tüm Kitaplar:");
-            foreach (var kitap in kitaplar)
+            Console.WriteLine("All books in library");
+            foreach (var book in books)
             {
-                Console.WriteLine($"Başlık: {kitap.Baslik}, Yazar: {kitap.Yazar}, ISBN: {kitap.ISBN}, Kopya Sayısı: {kitap.KopyaSayisi}, Ödünç Alınan Kopyalar: {kitap.OduncAlinanKopyalar}");
+                Console.WriteLine($"{book.Title} by {book.Author} - ISBN: {book.ISBN} - Copies Available: {book.Copies - book.Borrowed}");
+
             }
         }
-
-        // Kitap Ara Metodu
-        public void KitapAra(string anahtar)
+        public void BookSearch(string key)
         {
-            Console.WriteLine($"Arama Sonuçları ({anahtar}):");
-            foreach (var kitap in kitaplar)
+            var searchResult = books.Where(book => book.Title.Contains(key) || book.Author.Contains(key)).ToList();
+            if (searchResult.Count > 0)
             {
-                if (kitap.Baslik.Contains(anahtar) || kitap.Yazar.Contains(anahtar))
+                Console.WriteLine("Search Results:");
+                foreach (var book in searchResult)
                 {
-                    Console.WriteLine($"Başlık: {kitap.Baslik}, Yazar: {kitap.Yazar}, ISBN: {kitap.ISBN}, Kopya Sayısı: {kitap.KopyaSayisi}, Ödünç Alınan Kopyalar: {kitap.OduncAlinanKopyalar}");
+                    Console.WriteLine($"{book.Title} by {book.Author} - ISBN: {book.ISBN} - Copies Available: {book.Copies - book.Borrowed}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("No matching books found.");
+            }
+        }
+        public void BookBorrow(string isbn)
+        {
+            var book = books.FirstOrDefault(b => b.ISBN == isbn && b.Copies > b.Borrowed);
+            if (book != null && book.Copies > 0 && book.Borrowed < book.Copies)
+            {
+                book.Copies--;
+                Console.WriteLine($"Successfully borrowed '{book.Title}' by {book.Author}.");
+            }
+            else
+            {
+                Console.WriteLine("The book could not be borrowed. There are not enough copies in stock.");
+            }
+        }
+        public void ReturnBook(string isbn)
+        {
+            var book = books.FirstOrDefault(b => b.ISBN == isbn && b.Borrowed > 0);
+            if (book != null)
+            {
+                book.Borrowed++;
+                Console.WriteLine($"Successfully returned '{book.Title}' by {book.Author}.");
+            }
+            else
+            {
+                Console.WriteLine("Invalid ISBN or the book is not borrowed.");
+            }
+        }
+        public void ExpiredBooks()
+        {
+            Console.WriteLine("ExpiredBooks");
+            foreach(var book in books)
+            {
+                if (book.Borrowed > 0)
+                {
+                    Console.WriteLine($"Title: {book.Title}, Author: {book.Author}, ISBN: {book.ISBN}, Copies: {book.Borrowed}, Borrowed ");
+                }
+            }
+        }
+        public void SaveDataToFile(string fileName)
+        {
+            using (StreamWriter writer = new StreamWriter(fileName))
+            {
+                foreach (var book in books)
+                {
+                    writer.WriteLine($"{book.Title},{book.Author},{book.ISBN},{book.Copies},{book.Borrowed}");
+                }
+            }
+        }
+        public void LoadDataFromFile(string fileName)
+        {
+            if (File.Exists(fileName))
+            {
+                books.Clear();
+                using (StreamReader reader = new StreamReader(fileName))
+                {
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        var data = line.Split(',');
+                        var book = new Book
+                        {
+                            Title = data[0],
+                            Author = data[1],
+                            ISBN = data[2],
+                            Copies = int.Parse(data[3]),
+                            Borrowed = int.Parse(data[4])
+                        };
+                        books.Add(book);
+                    }
                 }
             }
         }
 
-        // Kitap Ödünç Alma Metodu
-        public void KitapOduncAl(string isbn)
-        {
-            var kitap = kitaplar.Find(x => x.ISBN == isbn);
-
-            if (kitap != null && kitap.KopyaSayisi > 0 && kitap.OduncAlinanKopyalar < kitap.KopyaSayisi)
-            {
-                kitap.OduncAlinanKopyalar++;
-                Console.WriteLine("Kitap başarıyla ödünç alındı.");
-            }
-            else
-            {
-                Console.WriteLine("Kitap ödünç alınamadı. Stokta yeterli kopya bulunmamaktadır.");
-            }
-        }
-
-        // Kitap İade Metodu
-        public void KitapIadeEt(string isbn)
-        {
-            var kitap = kitaplar.Find(x => x.ISBN == isbn);
-
-            if (kitap != null && kitap.OduncAlinanKopyalar > 0)
-            {
-                kitap.OduncAlinanKopyalar--;
-                Console.WriteLine("Kitap başarıyla iade edildi.");
-            }
-            else
-            {
-                Console.WriteLine("Kitap iade edilemedi. Ödünç alınan kopya bulunmamaktadır.");
-            }
-        }
-
-        // Süresi Geçmiş Kitapları Listeleme Metodu
-        public void SuresiGecmisKitaplar()
-        {
-            Console.WriteLine("Süresi Geçmiş Kitaplar:");
-            foreach (var kitap in kitaplar)
-            {
-                if (kitap.OduncAlinanKopyalar > 0)
-                {
-                    Console.WriteLine($"Başlık: {kitap.Baslik}, Yazar: {kitap.Yazar}, ISBN: {kitap.ISBN}, Kopya Sayısı: {kitap.KopyaSayisi}, Ödünç Alınan Kopyalar: {kitap.OduncAlinanKopyalar}");
-                }
-            }
-        }
     }
 
-    // Konsol Uygulaması
     class Program
     {
         static void Main()
         {
-            Kutuphane kutuphane = new Kutuphane();
+            Library library = new Library();
+            string dataFileName = "library_data.txt";
 
+
+            library.LoadDataFromFile(dataFileName);
             while (true)
             {
-                Console.WriteLine("\nKütüphane Yönetim Sistemi");
-                Console.WriteLine("1. Kitap Ekle");
-                Console.WriteLine("2. Tüm Kitapları Listele");
-                Console.WriteLine("3. Kitap Ara");
-                Console.WriteLine("4. Kitap Ödünç Al");
-                Console.WriteLine("5. Kitap İade Et");
-                Console.WriteLine("6. Süresi Geçmiş Kitapları Listele");
-                Console.WriteLine("7. Çıkış");
+                Console.WriteLine("\nLibrary Control System");
+                Console.WriteLine("1. Book Add");
+                Console.WriteLine("2. All Books List");
+                Console.WriteLine("3. Book Search");
+                Console.WriteLine("4. Borrow a Book");
+                Console.WriteLine("5. Return Book ");
+                Console.WriteLine("6. List Expired Books");
+                Console.WriteLine("7. Exit");
 
-                Console.Write("Seçiminizi yapınız: ");
-                string secim = Console.ReadLine();
+                Console.WriteLine("Make Your Choice");
+                string choice = Console.ReadLine();
 
-                switch (secim)
+                switch (choice)
                 {
                     case "1":
-                        Console.Write("Kitap Başlığı: ");
-                        string baslik = Console.ReadLine();
-                        Console.Write("Yazar: ");
-                        string yazar = Console.ReadLine();
+                        Console.Write("Title: ");
+                        string title = Console.ReadLine();
+                        Console.Write("Author");
+                        string author = Console.ReadLine();
                         Console.Write("ISBN: ");
                         string isbn = Console.ReadLine();
-                        Console.Write("Kopya Sayısı: ");
-                        int kopyaSayisi = int.Parse(Console.ReadLine());
+                        Console.Write("Copy: ");
+                        int copies = int.Parse(Console.ReadLine());
 
-                        Kitap yeniKitap = new Kitap(baslik, yazar, isbn, kopyaSayisi);
-                        kutuphane.KitapEkle(yeniKitap);
+                        Book newBook = new Book
+                        {
+                            Title = title,
+                            Author = author,
+                            ISBN = isbn,
+                            Copies = copies,
+                            Borrowed = 0
+                        };
+
+                        library.BookAdd(newBook);
+                        Console.WriteLine("Book added successfully.");
                         break;
 
                     case "2":
-                        kutuphane.TumKitaplariListele();
+                        library.AllBooksList();
                         break;
+
 
                     case "3":
-                        Console.Write("Arama Anahtarı (Başlık veya Yazar): ");
-                        string anahtar = Console.ReadLine();
-                        kutuphane.KitapAra(anahtar);
+                        Console.Write("Search key (title and Author):");
+                        string key = Console.ReadLine();
+                        library.BookSearch(key);
                         break;
-
                     case "4":
                         Console.Write("ISBN: ");
-                        string oduncAlIsbn = Console.ReadLine();
-                        kutuphane.KitapOduncAl(oduncAlIsbn);
+                        string barrowIsbn = Console.ReadLine();
+                        library.BookBorrow(barrowIsbn);
                         break;
-
                     case "5":
                         Console.Write("ISBN: ");
-                        string iadeIsbn = Console.ReadLine();
-                        kutuphane.KitapIadeEt(iadeIsbn);
+                        string returnIsbn = Console.ReadLine();
+                        library.ReturnBook(returnIsbn);
                         break;
-
                     case "6":
-                        kutuphane.SuresiGecmisKitaplar();
+                        library.ExpiredBooks();
                         break;
-
                     case "7":
-                        Console.WriteLine("Çıkış yapılıyor...");
+                        library.SaveDataToFile(dataFileName);
+                        Console.WriteLine("Signing out");
                         return;
-
                     default:
-                        Console.WriteLine("Geçersiz seçim. Lütfen tekrar deneyin.");
+                        Console.WriteLine("Invalid selection. Please try again.");
                         break;
+
                 }
+
+
+
             }
         }
     }
+
+
 }
