@@ -1,0 +1,7 @@
+C:\MyUnityGames\LibaryManagementSystem\LibaryManagement\LibaryManagement\obj\Debug\LibaryManagement.csproj.AssemblyReference.cache
+C:\MyUnityGames\LibaryManagementSystem\LibaryManagement\LibaryManagement\obj\Debug\LibaryManagement.csproj.CoreCompileInputs.cache
+C:\MyUnityGames\LibaryManagementSystem\LibaryManagement\LibaryManagement\bin\Debug\LibaryManagement.exe.config
+C:\MyUnityGames\LibaryManagementSystem\LibaryManagement\LibaryManagement\bin\Debug\LibaryManagement.exe
+C:\MyUnityGames\LibaryManagementSystem\LibaryManagement\LibaryManagement\bin\Debug\LibaryManagement.pdb
+C:\MyUnityGames\LibaryManagementSystem\LibaryManagement\LibaryManagement\obj\Debug\LibaryManagement.exe
+C:\MyUnityGames\LibaryManagementSystem\LibaryManagement\LibaryManagement\obj\Debug\LibaryManagement.pdb
