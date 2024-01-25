@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 
-namespace LibaryManagement
+namespace LibraryManagement
 {
     public class Book
     {
@@ -141,14 +141,14 @@ namespace LibaryManagement
             {
                 Console.WriteLine("\nLibrary Control System");
                 Console.WriteLine("1. Add a new book");
-                Console.WriteLine("2. Şist All Books");
+                Console.WriteLine("2. List All Books");
                 Console.WriteLine("3. Search Book");
                 Console.WriteLine("4. Borrow a Book");
                 Console.WriteLine("5. Return Book");
                 Console.WriteLine("6. List Expired Books");
                 Console.WriteLine("7. Exit");
 
-                Console.WriteLine("Make Your Choice");
+                Console.WriteLine("Enter your choice: ");
                 string choice = Console.ReadLine();
 
                 switch (choice)
@@ -160,8 +160,15 @@ namespace LibaryManagement
                         string author = Console.ReadLine();
                         Console.Write("ISBN: ");
                         string isbn = Console.ReadLine();
-                        Console.Write("Number of copies: ");
-                        int copies = int.Parse(Console.ReadLine());
+                        Console.Write("Number of copies: ");                        
+                        int copies;
+
+                        while (!int.TryParse(Console.ReadLine(), out copies))
+                        {
+                            Console.WriteLine("Invalid input. Please enter a valid number.");
+                            Console.Write("Enter number of copies: ");
+                        }
+
 
                         Book newBook = new Book
                         {
