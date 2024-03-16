@@ -111,7 +111,7 @@ namespace LibraryManagement
                     string line;
                     while ((line = reader.ReadLine()) != null)
                     {
-                        var data = line.Split(',');
+                        var data = line.Split('\n');
                         var book = new Book
                         {
                             Title = data[0],
